@@ -67,11 +67,16 @@ class Score:
         return f"{self._pair_name} - MATCH[{self._match[0]} WINS, {self._match[1]} TIES, {self._match[2]} LOSSES] - GAMES[{self._game[0]} WINS, {self._game[1]} TIES, {self._game[2]} LOSSES]"
 
 # Duplas do torneio			
-PAIRS = {
+PAIRS2 = {
         'Greedies': (DummyPlayer(1, "Mr Burns", "img/Mr_Burns.jpg"), DummyPlayer(2, "Mr Krabs", "img/Mr_Krabs.jpeg")), 
         'Mixed': (GreedyPlayer(3, "Scrooge McDuck", "img/Scrooge_McDuck.jpg"), GreedyPlayer(4, "Homer_Simpson", "img/Homer_Simpson.png")), 
         'Dummies': (GreedyPlayer(5, "Patrick Star", "img/Patrick_Star.jpeg"), DummyPlayer(6, "Philip Fry", "img/Philip_Fry.jpg")),
 		pair_name(): create_pair()
+    }
+
+PAIRS = {
+        'Greedies': (DummyPlayer(1, "Mr Burns", "img/Mr_Burns.jpg"), DummyPlayer(2, "Mr Krabs", "img/Mr_Krabs.jpeg")), 
+        pair_name(): create_pair()
     }
 		
 # Inicializa pygame
