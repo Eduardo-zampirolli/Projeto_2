@@ -12,7 +12,7 @@ for i in range(10):
 
 
 # Jogador que não faz nada. Subsitua esta classe pela(s) sua(s), ela(s) deve(m) herdar da classe Player
-class NonePLayer(Player):
+class NonePlayer(Player):
 
     def __init__(self):
         super().__init__(0, "Ninguém")
@@ -66,4 +66,4 @@ def pair_name():
 
 # Função que cria a dupla:
 def create_pair():
-    return (NonePLayer(), NonePLayer()) # Defina aqui a dupla de jogadores. Deve ser uma tupla com dois jogadores.	
+    return (NonePlayer(), NonePlayer()) # Defina aqui a dupla de jogadores. Deve ser uma tupla com dois jogadores.	
