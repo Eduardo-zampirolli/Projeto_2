@@ -49,12 +49,15 @@ class NonePlayer(Player):
             if playable_tiles[i][0] == playable_tiles[i][1] and playable_tiles[i][0] > jogada[0]:
                 jogada = playable_tiles[i]
             if jogada[0] != -1:
+                self.valores[playable_tiles[i][0]] -= 2
                 return 1, playable_tiles[i]
         for i in range(len(playable_tiles)):
             if playable_tiles[i][0] + playable_tiles[i][1] > tile_sum:
                 tile_sum = playable_tiles[i][0] + playable_tiles[i][1]
                 highest = i
         if highest >= 0:
+            self.valores[playable_tiles[highest[0]]] -= 1
+            self.valores[playable_tiles[highest[1]]] -= 1
             return 1, playable_tiles[highest]
         else:
             return 1, None
