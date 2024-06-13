@@ -18,10 +18,12 @@ class NonePlayer(Player):
         super().__init__(0, "Ninguém")
         self.num_disp = {i: 11 for i in range(10)}   
         self.valores = {i:0 for i in range(10)}     
-
+        self.prox_sem = set()
+        self.dupla_sem = set()
     def play(self, board_extremes, play_hist):
         #Criar uma lista que armazena todas peças disponíveis para os demais jogadores
         if len(self._tiles) == 10:
+
             #num_dispj1 = {i: 11 for i in range(10)}
             for peca in self._tiles:
                 self.num_disp[peca[0]] -= 1
@@ -33,6 +35,13 @@ class NonePlayer(Player):
                 if play_hist[k][3] != None: 
                     self.num_disp[play_hist[k][3][0]] -= 1
                     self.num_disp[play_hist[k][3][1]] -= 1
+                else:
+                    if k == -3:
+                        self.prox_sem.add(play_hist[k][1][0])  
+                        self.prox_sem.add(play_hist[k][1][1])
+                    elif k == -2:
+                        self.dupla_sem.add(play_hist[k][1][0])  
+                        self.dupla_sem.add(play_hist[k][1][1])
         else:
             for k in range(-len(play_hist),0):
                 if play_hist[k][3] != None: 
@@ -56,13 +65,14 @@ class NonePlayer(Player):
                 tile_sum = playable_tiles[i][0] + playable_tiles[i][1]
                 highest = i
         if highest >= 0:
-            self.valores[playable_tiles[highest[0]]] -= 1
-            self.valores[playable_tiles[highest[1]]] -= 1
+            self.valores[playable_tiles[highest][0]] -= 1
+            self.valores[playable_tiles[highest][1]] -= 1
             return 1, playable_tiles[highest]
         else:
             return 1, None
-        
-		
+   
+
+   
 # Função que define o nome da dupla:
 def pair_name():
     return "algum nome" # Defina aqui o nome da sua dupla
