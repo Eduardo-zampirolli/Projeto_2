@@ -12,7 +12,9 @@ for i in range(10):
 #Dicionário que guarda todos os números disponíveis
 num_dispj1 = {i: 11 for i in range(10)}
 num_dispj2 = {i: 11 for i in range(10)}
-
+#Dicionário que guarda quais valores os jogadores tem
+valores_j1= {i:0 for i in range(10)}
+valores_j2= {i:0 for i in range(10)}
 
 
 # Jogador que não faz nada. Subsitua esta classe pela(s) sua(s), ela(s) deve(m) herdar da classe Player
@@ -23,18 +25,25 @@ class NonePLayer(Player):
 
     def play(self, board_extremes, play_hist):
         global num_dispj1
+        global valores_j1
         #Criar uma lista que armazena todas peças disponíveis para os demais jogadores
         if len(self._tiles) == 10:
             #num_dispj1 = {i: 11 for i in range(10)}
             for peca in self._tiles:
                 num_dispj1[peca[0]] -= 1
                 num_dispj1[peca[1]] -= 1
+                valores_j1[peca[0]] += 1
+                valores_j1[peca[1]] += 1
         if len(play_hist) > 2:
             for k in range(-3,0):
                 if play_hist[k][3] != None: 
                     num_dispj1[play_hist[k][3][0]] -= 1
                     num_dispj1[play_hist[k][3][1]] -= 1
-        
+        else:
+            for k in range(-len(play_hist),0):
+                if play_hist[k][3] != None: 
+                    num_dispj1[play_hist[k][3][0]] -= 1
+                    num_dispj1[play_hist[k][3][1]] -= 1
         
         playable_tiles = self._tiles
         if len(board_extremes) > 0:
@@ -63,18 +72,25 @@ class NonePLayer2(Player):
 
     def play(self, board_extremes, play_hist):
         global num_dispj2
+        global valores_j2
         #Criar uma lista que armazena todas peças disponíveis para os demais jogadores
         if len(self._tiles) == 10:
-            #num_dispj1 = {i: 11 for i in range(10)}
+            #num_dispj2 = {i: 11 for i in range(10)}
             for peca in self._tiles:
                 num_dispj2[peca[0]] -= 1
                 num_dispj2[peca[1]] -= 1
+                valores_j2[peca[0]] += 1
+                valores_j2[peca[1]] += 1
         if len(play_hist) > 2:
             for k in range(-3,0):
                 if play_hist[k][3] != None:
                     num_dispj2[play_hist[k][3][0]] -= 1
                     num_dispj2[play_hist[k][3][1]] -= 1
-        
+        else:
+            for k in range(-len(play_hist),0):
+                if play_hist[k][3] != None: 
+                    num_dispj2[play_hist[k][3][0]] -= 1
+                    num_dispj2[play_hist[k][3][1]] -= 1
         
         playable_tiles = self._tiles
         if len(board_extremes) > 0:
@@ -86,12 +102,15 @@ class NonePLayer2(Player):
             if playable_tiles[i][0] == playable_tiles[i][1] and playable_tiles[i][0] > jogada[0]:
                 jogada = playable_tiles[i]
             if jogada[0] != -1:
+                valores_j2[playable_tiles[i][0]] -= 2
                 return 1, playable_tiles[i]
         for i in range(len(playable_tiles)):
             if playable_tiles[i][0] + playable_tiles[i][1] > tile_sum:
                 tile_sum = playable_tiles[i][0] + playable_tiles[i][1]
                 highest = i
         if highest >= 0:
+            valores_j2[playable_tiles[highest][0]] -= 1
+            valores_j2[playable_tiles[highest][1]] -= 1
             return 1, playable_tiles[highest]
         else:
             return 1, None
