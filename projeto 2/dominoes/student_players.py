@@ -20,7 +20,6 @@ class NonePlayer(Player):
         self.valores = {i:0 for i in range(10)}     
         self.prox_sem = set()
         self.dupla_sem = set()
-
     def play(self, board_extremes, play_hist):
         #Criar uma lista que armazena todas peças disponíveis para os demais jogadores
         if len(self._tiles) == 10:
@@ -31,7 +30,6 @@ class NonePlayer(Player):
                 self.num_disp[peca[1]] -= 1
                 self.valores[peca[0]] += 1
                 self.valores[peca[1]] += 1
-
         if len(play_hist) > 2:
             for k in range(-3,0):
                 if play_hist[k][3] != None: 
@@ -50,19 +48,9 @@ class NonePlayer(Player):
                     self.num_disp[play_hist[k][3][0]] -= 1
                     self.num_disp[play_hist[k][3][1]] -= 1
         
-        playable_tiles = []
+        playable_tiles = self._tiles
         if len(board_extremes) > 0:
-            #playable_tiles = [tile for tile in self._tiles if tile[0] in board_extremes or tile[1] in board_extremes]
-
-            for tile in self._tiles:
-                if tile[0] in board_extremes or tile[1] in board_extremes:
-                    playable_tiles.append(tile)
-
-                if self.check_sem(tile, board_extremes[0]) != None:
-                    return 0, tile
-                elif self.check_sem(tile, board_extremes[1]) != None:
-                    return 1, tile
-
+            playable_tiles = [tile for tile in self._tiles if tile[0] in board_extremes or tile[1] in board_extremes]
         highest = -1
         tile_sum = -1
         jogada = (-1,-1)
@@ -83,15 +71,6 @@ class NonePlayer(Player):
         else:
             return 1, None
    
-    def check_sem(self, tile, extremo):
-        """Recebe uma peça e uma extremidade e verifica se ela deve ser colocada baseado no que o amigo e o proximo têm"""
-        if tile[0] == extremo and extremo not in self.prox_sem and tile[1] in self.prox_sem:
-            if tile[1] not in self.dupla_sem:
-                return tile
-        if tile[1] == extremo and extremo not in self.prox_sem and tile[0] in self.prox_sem:
-            if tile[0] not in self.dupla_sem:
-                return tile
-        return None
 
    
 # Função que define o nome da dupla:
