@@ -20,17 +20,52 @@ class NonePlayer(Player):
         self.valores = {i:0 for i in range(10)}     
         self.prox_sem = set()
         self.dupla_sem = set()
+    
+    def analise_freq(self, pecas_jogaveis, extremos):
+        """Escolhe a peça maior e de maior frequencia"""
+
+        melhor_peca = (0, 0)
+        peca_mais_alta = (0, 0)
+
+        if len(pecas_jogaveis) > 0:
+            melhor_peca = pecas_jogaveis[0]
+
+        melhor_freq = 0
+
+        for peca in pecas_jogaveis:
+            if self.valores[peca[0]] + self.valores[peca[1]] > melhor_freq:
+                melhor_peca = peca
+                melhor_freq = self.valores[peca[0]] + self.valores[peca[1]]
+            
+            if peca[0] + peca[1] > peca_mais_alta[0] + peca_mais_alta[1]:
+                peca_mais_alta = peca
+
+            if peca[0] == peca[1]:
+                self.valores[peca[0]] -= 2
+                return peca
+        
+        if melhor_freq <= 4:
+            melhor_peca = peca_mais_alta
+                
+        self.valores[melhor_peca[0]] -= 1
+        self.valores[melhor_peca[1]] -= 1
+
+        return melhor_peca
+
+
     def play(self, board_extremes, play_hist):
         #Criar uma lista que armazena todas peças disponíveis para os demais jogadores
-        if len(self._tiles) == 10:
 
+        if len(self._tiles) == 10:
             #num_dispj1 = {i: 11 for i in range(10)}
             for peca in self._tiles:
                 self.num_disp[peca[0]] -= 1
                 self.num_disp[peca[1]] -= 1
                 self.valores[peca[0]] += 1
                 self.valores[peca[1]] += 1
+
         if len(play_hist) > 2:
+
             for k in range(-3,0):
                 if play_hist[k][3] != None: 
                     self.num_disp[play_hist[k][3][0]] -= 1
@@ -49,29 +84,13 @@ class NonePlayer(Player):
                     self.num_disp[play_hist[k][3][1]] -= 1
         
         playable_tiles = self._tiles
+
         if len(board_extremes) > 0:
             playable_tiles = [tile for tile in self._tiles if tile[0] in board_extremes or tile[1] in board_extremes]
-        highest = -1
-        tile_sum = -1
-        jogada = (-1,-1)
-        for i in range(len(playable_tiles)):
-            if playable_tiles[i][0] == playable_tiles[i][1] and playable_tiles[i][0] > jogada[0]:
-                jogada = playable_tiles[i]
-            if jogada[0] != -1:
-                self.valores[playable_tiles[i][0]] -= 2
-                return 1, playable_tiles[i]
-        for i in range(len(playable_tiles)):
-            if playable_tiles[i][0] + playable_tiles[i][1] > tile_sum:
-                tile_sum = playable_tiles[i][0] + playable_tiles[i][1]
-                highest = i
-        if highest >= 0:
-            self.valores[playable_tiles[highest][0]] -= 1
-            self.valores[playable_tiles[highest][1]] -= 1
-            return 1, playable_tiles[highest]
-        else:
-            return 1, None
+        
+        return 1, self.analise_freq(playable_tiles, board_extremes)
    
-
+   
    
 # Função que define o nome da dupla:
 def pair_name():
