@@ -20,19 +20,37 @@ class NonePlayer(Player):
         self.valores = {i:0 for i in range(10)}     
         self.prox_sem = set()
         self.dupla_sem = set()
+        
     
     def analise_freq(self, pecas_jogaveis, extremos):
         """Escolhe a peça maior e de maior frequencia"""
 
+        pecas_bloqueadoras = []
         melhor_peca = (0, 0)
         peca_mais_alta = (0, 0)
-
-        if len(pecas_jogaveis) > 0:
-            melhor_peca = pecas_jogaveis[0]
-
         melhor_freq = 0
+        if len(pecas_jogaveis) > 0:
+            
+            melhor_peca = pecas_jogaveis[0]
+            melhor_freq = self.valores[pecas_jogaveis[0][0]] + self.valores[pecas_jogaveis[0][1]]
+        
 
         for peca in pecas_jogaveis:
+            if peca[0] == peca[1]:
+                self.valores[peca[0]] -= 2
+                return peca
+            
+            
+            
+            if len(extremos) > 0: #TESTE
+                if self.check_sem(peca, extremos[1]) != None:
+                    pecas_bloqueadoras.append([peca,extremos[1]])
+                    
+                    
+                elif self.check_sem(peca, extremos[0]) != None:
+                    pecas_bloqueadoras.append([peca,extremos[0]])
+                    
+                
             if self.valores[peca[0]] + self.valores[peca[1]] > melhor_freq:
                 melhor_peca = peca
                 melhor_freq = self.valores[peca[0]] + self.valores[peca[1]]
@@ -40,10 +58,17 @@ class NonePlayer(Player):
             if peca[0] + peca[1] > peca_mais_alta[0] + peca_mais_alta[1]:
                 peca_mais_alta = peca
 
-            if peca[0] == peca[1]:
+            '''if peca[0] == peca[1]:
                 self.valores[peca[0]] -= 2
-                return peca
-        
+                return peca'''
+        if len(pecas_bloqueadoras) > 0:
+            melhor = [(0,0),0]
+            for peca in pecas_bloqueadoras:
+                if peca[0][0] + peca[0][1] > melhor[0][0] + melhor[0][1]:
+                    melhor = peca
+            self.valores[melhor[0][0]] -= 1
+            self.valores[melhor[0][1]] -= 1
+            return melhor[0]
         if melhor_freq <= 4:
             melhor_peca = peca_mais_alta
                 
@@ -65,7 +90,7 @@ class NonePlayer(Player):
                 self.valores[peca[1]] += 1
 
         if len(play_hist) > 2:
-
+            
             for k in range(-3,0):
                 if play_hist[k][3] != None: 
                     self.num_disp[play_hist[k][3][0]] -= 1
@@ -90,7 +115,15 @@ class NonePlayer(Player):
         
         return 1, self.analise_freq(playable_tiles, board_extremes)
    
-   
+    def check_sem(self, tile, extremo):
+        """Recebe uma peça e uma extremidade e verifica se ela deve ser colocada baseado no que o amigo e o proximo têm"""
+        if tile[0] == extremo and extremo not in self.prox_sem and tile[1] in self.prox_sem:
+            if tile[1] not in self.dupla_sem:
+                return tile
+        if tile[1] == extremo and extremo not in self.prox_sem and tile[0] in self.prox_sem:
+            if tile[0] not in self.dupla_sem:
+                return tile
+        return None
    
 # Função que define o nome da dupla:
 def pair_name():
