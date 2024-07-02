@@ -29,6 +29,7 @@ class AnalystPlayer(Player):
         melhor_peca = (0, 0) #Peça de maior frequência e/ou maior
         peca_mais_alta = (0, 0)
         melhor_freq = 0
+        mais_rara = None
         melhor_dupla = None
 
         if len(pecas_jogaveis) > 0:
@@ -62,7 +63,22 @@ class AnalystPlayer(Player):
             
             if peca[0] + peca[1] > peca_mais_alta[0] + peca_mais_alta[1]:
                 peca_mais_alta = peca
-        
+
+            #Escolher peça mais rara
+            if mais_rara == None:
+                if peca[0] in extremos:
+                    mais_rara = [peca,peca[1]]
+                else:
+                    mais_rara = [peca,peca[0]]
+            else:
+                raridade = self.chances()
+                if  peca[0] in extremos:
+                    if raridade.index(peca[1]) < raridade.index(mais_rara[1]):
+                        mais_rara = [peca,peca[1]]
+                else:
+                    if raridade.index(peca[0]) < raridade.index(mais_rara[1]):
+                        mais_rara = [peca,peca[0]]
+
         #Escolhe a melhor peça bloqueadora
         if len(pecas_bloqueadoras) > 0:
             melhor = [(0,0),0]
@@ -71,12 +87,16 @@ class AnalystPlayer(Player):
                     melhor = peca
             self.valores[melhor[0][0]] -= 1
             self.valores[melhor[0][1]] -= 1
+            
 
             return melhor[1], melhor[0]
         
         #Se as frequencias não forem altas o bastante, escolhe a peça mais alta
         if melhor_freq < 4:
-            melhor_peca = peca_mais_alta
+            if mais_rara != None and self.num_disp[mais_rara[1]] < 3 and mais_rara[1] not in self.dupla_sem:
+                melhor_peca = mais_rara[0]
+            else:
+                melhor_peca = peca_mais_alta
         
         #Duplas recebem prioridade
         if melhor_dupla != None:
@@ -84,7 +104,8 @@ class AnalystPlayer(Player):
                 
         self.valores[melhor_peca[0]] -= 1
         self.valores[melhor_peca[1]] -= 1
-
+        
+        
         return 0, melhor_peca
 
 
@@ -136,7 +157,20 @@ class AnalystPlayer(Player):
             if tile[0] not in self.dupla_sem:
                 return tile
         return None
-   
+    
+    
+    def chances(self):
+        '''Função que retorna a lista odenada dos valores mais raros até os mais comuns'''
+        
+        aux = self.num_disp
+        ordenado = {k: v for k, v in sorted(aux.items(), key=lambda item: item[1])}
+        lista = []
+        for i in ordenado:
+            lista.append(i)
+
+        return lista
+            
+
 # Função que define o nome da dupla:
 def pair_name():
     return "Dupla Analista" # Defina aqui o nome da sua dupla
