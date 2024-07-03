@@ -91,10 +91,12 @@ class AnalystPlayer(Player):
 
             return melhor[1], melhor[0]
         
-        #Se as frequencias não forem altas o bastante, escolhe a peça mais alta
+        #Se as frequencias não forem altas o bastante, escolhe entre a peça mais alta e a mais rara
         if melhor_freq < 4:
+            #Caso a mais rara tenha uma quantidade menor de 3 e o seu amigo tem essa peça faltante
             if mais_rara != None and self.num_disp[mais_rara[1]] < 3 and mais_rara[1] not in self.dupla_sem:
                 melhor_peca = mais_rara[0]
+            #Ao contrário, escolher a peça com valor mais alto
             else:
                 melhor_peca = peca_mais_alta
         
@@ -113,11 +115,16 @@ class AnalystPlayer(Player):
 
         #Armazena a frequencia dos números que os outros jogadores podem ter e a frequencia dos que o jogador tem
         if len(self._tiles) == 10:
+            self.num_disp = {i: 11 for i in range(10)} #Frequência de cada número disponível para os outros jogadores
+            self.valores = {i:0 for i in range(10)} #Frequência de cada número para o jogador
+            self.prox_sem = set() #Valores que o proximo não tem (jogar para bloquear)
+            self.dupla_sem = set()
             for peca in self._tiles:
                 self.num_disp[peca[0]] -= 1
                 self.num_disp[peca[1]] -= 1
                 self.valores[peca[0]] += 1
                 self.valores[peca[1]] += 1
+            
 
         if len(play_hist) > 2:
             
@@ -140,12 +147,15 @@ class AnalystPlayer(Player):
                     self.num_disp[play_hist[k][3][1]] -= 1
         
         playable_tiles = self._tiles
-
+        #Estabelecer quas são as peças jogáveis
         if len(board_extremes) > 0:
             playable_tiles = [tile for tile in self._tiles if tile[0] in board_extremes or tile[1] in board_extremes]
-        
-        peca_e_extremo = self.analise_freq(playable_tiles, board_extremes)
-        return peca_e_extremo[0], peca_e_extremo[1]
+        #Retornar a peça que foi escolhida por meio da função de análise
+        if playable_tiles != None:
+            peca_e_extremo = self.analise_freq(playable_tiles, board_extremes)
+            return peca_e_extremo[0], peca_e_extremo[1]
+        else:
+            return 1, None
    
     def check_sem(self, tile, extremo):
         """Recebe uma peça e uma extremidade e verifica se ela deve ser colocada baseado no que o amigo e o proximo têm"""
@@ -161,7 +171,7 @@ class AnalystPlayer(Player):
     
     def chances(self):
         '''Função que retorna a lista odenada dos valores mais raros até os mais comuns'''
-        
+
         aux = self.num_disp
         ordenado = {k: v for k, v in sorted(aux.items(), key=lambda item: item[1])}
         lista = []
